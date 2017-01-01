@@ -6,39 +6,44 @@
 import psycopg2
 
 
-def connect():
+def connect(database_name="tournament"):
     """Connect to the PostgreSQL database.  Returns a database connection."""
-    cnn = psycopg2.connect("dbname=tournament")
-    # cnn.autocommit = True
-    return cnn
+    # db.autocommit = True
+
+    try:
+        db = psycopg2.connect("dbname={}".format(database_name))
+        cursor = db.cursor()
+        return db, cursor
+    except:
+        print("Error in function connect()")
 
 
 def deleteMatches():
     """Remove all the match records from the database."""
-    cnn = connect()
-    c = cnn.cursor()
-    c.execute("delete from matches")
-    cnn.commit()
-    cnn.close()
+    db, cursor = connect()
+    # cursor.execute("delete from matches")
+    cursor.execute("truncate matches")
+    db.commit()
+    db.close()
 
 
 def deletePlayers():
     """Remove all the player records from the database."""
-    cnn = connect()
-    c = cnn.cursor()
-    c.execute("delete from matches")
-    c.execute("delete from players")
-    cnn.commit()
-    cnn.close()
+    db, cursor = connect()
+    # cursor.execute("delete from matches")
+    # cursor.execute("delete from players")
+    cursor.execute("truncate matches")
+    cursor.execute("truncate players cascade")
+    db.commit()
+    db.close()
 
 
 def countPlayers():
     """Returns the number of players currently registered."""
-    cnn = connect()
-    c = cnn.cursor()
-    c.execute("select count(name) from players")
-    results = c.fetchall()[0][0]
-    cnn.close()
+    db, cursor = connect()
+    cursor.execute("select count(name) from players")
+    results = cursor.fetchone()[0]
+    db.close()
     return results
 
 
@@ -51,11 +56,12 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
-    cnn = connect()
-    c = cnn.cursor()
-    c.execute("INSERT INTO players (name) VALUES (%s)", (name,))
-    cnn.commit()
-    cnn.close()
+    db, cursor = connect()
+    query = "insert into players (name) values (%s)"
+    params = (name,)
+    cursor.execute(query, params)
+    db.commit()
+    db.close()
 
 
 def playerStandings():
@@ -71,17 +77,35 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-    cnn = connect()
-    c = cnn.cursor()
+    db, cursor = connect()
     # coalesce() function is used when a record is not exist,
     # and pick a default value for that record
-    c.execute("""select id,name,coalesce(wins,0),coalesce(matches,0) 
-                    from players left join matches 
-                    on players.id=matches.player 
-                    order by wins desc;""")
 
-    results = c.fetchall()
-    cnn.close()
+    query = """
+        select playermatches.id,
+               playermatches.name,
+               coalesce(winners.wins, 0) as wins,
+               playermatches.matches
+        from
+            (select players.id as id,
+                    players.name as name,
+                    count(matches.id) as matches
+             from players
+             left join matches
+             on players.id=matches.winner or players.id=matches.loser
+             group by players.id) as playermatches
+        left join
+            (select winner as winnerid,
+                    count(winner) as wins
+             from matches group by winner) as winners
+        on playermatches.id=winners.winnerid
+        order by wins desc, matches desc
+    """
+
+    cursor.execute(query)
+    results = cursor.fetchall()
+
+    db.close()
     return results
 
 
@@ -92,19 +116,12 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
-    cnn = connect()
-    c = cnn.cursor()
-    # when player wins get 1 score
-    c.execute("""insert into matches
-                (player, wins, matches)values (%d,%d,%d)""" %
-              (winner, 1, 1))
-    cnn.commit()
-    # if player did not win, get 0
-    c.execute("""insert into matches 
-            (player, wins, matches) values (%d,%d,%d)""" %
-              (loser, 0, 1))
-    cnn.commit()
-    cnn.close()
+    db, cursor = connect()
+    query = "insert into matches (winner, loser) values (%s, %s);"
+    params = (winner, loser)
+    cursor.execute(query, params)
+    db.commit()
+    db.close()
 
 
 def swissPairings():
@@ -135,7 +152,3 @@ def swissPairings():
             tmp = []
         index += 1
     return results
-
-# the following lines are used for testing in this file
-if __name__ == '__main__':
-    print swissPairings()
