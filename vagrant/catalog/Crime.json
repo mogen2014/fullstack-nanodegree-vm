@@ -1,0 +1,36 @@
+{
+  "TV_Items": [
+    {
+      "created_time": "Wed, 04 Jan 2017 13:50:39 GMT", 
+      "description": "Mild-mannered high school chemistry teacher Walter White thinks his life can't get much worse. His salary barely makes ends meet, a situation not likely to improve once his pregnant wife gives birth, and their teenage son is battling cerebral palsy. But Walter is dumbstruck when he learns he has ter\u2026 ", 
+      "genre": "Crime", 
+      "id": 5, 
+      "img_url": "https://upload.wikimedia.org/wikipedia/en/thumb/6/61/Breaking_Bad_title_card.png/250px-Breaking_Bad_title_card.png", 
+      "name": "Breaking Bad"
+    }, 
+    {
+      "created_time": "Wed, 04 Jan 2017 13:51:40 GMT", 
+      "description": "Atlantic City at the dawn of Prohibition is a place where the rules don't apply. And the man who runs things -- legally and otherwise -- is the town's treasurer, Enoch \"Nucky\" Thompson, who is equal parts politician and gangster. Side by side with his brother Elias, Atlantic City's sheriff, and a cr\u2026 ", 
+      "genre": "Crime", 
+      "id": 6, 
+      "img_url": "https://upload.wikimedia.org/wikipedia/en/thumb/2/2d/Boardwalk_Empire_2010_Intertitle.png/250px-Boardwalk_Empire_2010_Intertitle.png", 
+      "name": "Boardwalk Empire"
+    }, 
+    {
+      "created_time": "Wed, 04 Jan 2017 13:57:44 GMT", 
+      "description": "Counterterrorism agent Jack Bauer fights the bad guys of the world, a day at a time. With each week's episode unfolding in real time, \"24\" covers a single day in the life of Bauer each season. Jack deals with assassination attempts, nuclear attacks, bioterrorism, torture, traitors, sleeper cells, ot\u2026", 
+      "genre": "Crime", 
+      "id": 10, 
+      "img_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/24-Logo.svg/250px-24-Logo.svg.png", 
+      "name": "24"
+    }, 
+    {
+      "created_time": "Wed, 04 Jan 2017 13:58:43 GMT", 
+      "description": "This series, loosely based Philip K. Dick's novel of the same name, takes a look at what the world might look like had the outcome of World War II turned out differently. In this dystopian scenario, the Axis powers won the war, leading to the United States being divided into three parts, an area con\u2026", 
+      "genre": "Crime", 
+      "id": 11, 
+      "img_url": "https://upload.wikimedia.org/wikipedia/en/thumb/c/c9/The_Man_in_the_High_Castle_%28TV_title%29.png/250px-The_Man_in_the_High_Castle_%28TV_title%29.png", 
+      "name": "The Man in the High Castle"
+    }
+  ]
+}

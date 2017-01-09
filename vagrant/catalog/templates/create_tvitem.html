@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block create_tvitem%}
+<div  id="create_tvitem">
+	<!-- only logged in user can create his own item -->
+	{% if login_session['email'] %}
+		<!-- edit item -->
+		{% if tvitem != None and login_session['email'] == tvitem.user.email %}
+		<form method="post">
+			<input id="new_tvitem_name" type="text" name="name" autofocus placeholder="name" value={{tvitem.name}}>
+			<div id="selector" type="{{ tvitem.genre.name }}">
+				<select name="current_genre">
+					<option value="Drama">Drama</option>
+					<option value="Comedy">Comedy</option>
+					<option value="Family">Family</option>
+					<option value="Crime">Crime</option>
+				</select>
+			</div>
+			<textarea id="new_tvitem_description" name="description" placeholder="description">{{tvitem.description}}</textarea>
+			<textarea id="new_tvitem_img" name="img_url" placeholder="Image URL(optional)">{{tvitem.img_url}}</textarea><br>
+			<input class="btn btn-default btn-xs" type="submit" value="Save">
+			<a class="btn btn-danger btn-xs" href="/{{tvitem.genre.name}}/{{tvitem.name}}">Cancel</a><br>
+		</form>
+
+		<!-- create item -->
+		{% elif current_genre != None %}
+		<form method="post">
+			<input id="new_tvitem_name" type="text" name="name" autofocus placeholder="name" value={{tvitem_name}}>
+			<div id="selector" type="{{current_genre.name}}">
+				<select name="current_genre">
+					<option value="Drama">Drama</option>
+					<option value="Comedy">Comedy</option>
+					<option value="Family">Family</option>
+					<option value="Crime">Crime</option>
+				</select>
+			</div>
+			<textarea id="new_tvitem_description" name="description" placeholder="description">{{tvitem_description}}</textarea>
+			<textarea id="new_tvitem_img" name="img_url" placeholder="Image URL(optional)">{{tvitem_img_url}}</textarea><br>
+			<input class="btn btn-default btn-xs" type="submit" value="Save">
+			<a class="btn btn-danger btn-xs" href="/{{current_genre.name}}">Cancel</a><br>
+		</form>
+		{% endif %}
+	<!-- if not login, show some messages to user -->
+	{% else %}
+	<h3>Please Login.</h3>
+	{% endif %}
+	<!-- erro message -->
+	<span id="error_msg">{{error}}</span>
+</div>
+
+{% endblock%}

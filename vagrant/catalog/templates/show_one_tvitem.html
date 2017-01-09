@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block tvitem %}
+<div id="tvitem">
+	<!-- if image does exixt, place an placeholder image -->
+	{% if tvitem.img_url %}
+	<img src="{{ tvitem.img_url }}" alt="tvshow poster">
+	{% else %}
+	<img src="/static/blank_poster.png" alt="tv poster">
+	{% endif %}
+	<div id="tvitem_info">
+		<h3>{{ tvitem.name }}</h3>
+		<span>Added by {{ tvitem.user.name }}</span>	
+	</div>
+	<hr>
+	<p>
+		<!-- add line break manually -->
+		{% for line in tvitem.description.splitlines() %}
+			{{line}}
+			<br>
+		{% endfor %}
+	</p>
+	<!-- only item's owner can edit -->
+	{% if  login_session['email'] and login_session['email'] == tvitem.user.email%}
+	<a class="btn btn-default btn-xs" href="/{{tvitem.genre.name}}/{{tvitem.name}}/edit"><span class="glyphicon glyphicon-edit"></span>&nbsp;Edit</a>
+	<a class="btn btn-danger btn-xs" href="/{{tvitem.genre.name}}/{{tvitem.name}}/delete"><span class="glyphicon glyphicon-remove"></span>&nbsp;Delete</a>
+	{% endif %}
+</div>
+
+{% endblock %}
