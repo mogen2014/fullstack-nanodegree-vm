@@ -22,7 +22,13 @@
 			<input class="btn btn-default btn-xs" type="submit" value="Save">
 			<a class="btn btn-danger btn-xs" href="/{{tvitem.genre.name}}/{{tvitem.name}}">Cancel</a><br>
 		</form>
+
 		<!-- create item -->
+		<!-- Hi,
+		Thank you for the last review, especially that function decorator.
+		In last review you point out that argument "current_genre" is not pass in from server side in file "create_tvitem.html" . I use that argument to set a default genre(category) value for html element "select" when user in a specific genre page, in case that user forgot pick a genre.
+		I don't know if I get it wrong or I have done the wrong way? Please let me know 😊 
+		Thanks and sorry for my poor English. -->
 		{% else %}
 		<form method="post">
 			<input id="new_tvitem_name" type="text" name="name" autofocus placeholder="name" value={{tvitem_name}}>
