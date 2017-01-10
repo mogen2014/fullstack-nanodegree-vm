@@ -154,44 +154,49 @@ def showOneTvshow(genre_name, tvitem_name):
 def editTvitem(genre_name, tvitem_name):
     genre_query = session.query(Genre).filter_by(name=genre_name)
     tvitem_query = session.query(TVShow).filter_by(name=tvitem_name)
-    if request.method == 'GET':
-        # check if genre name and tvitem name from
-        # request URL is valid
-        if tvitem_query.count() > 0 and genre_query.count() > 0:
-            tvitem = tvitem_query.one()
-            return render_template('create_tvitem.html',
-                                   tvitem=tvitem,
-                                   login_session=login_session)
-        else:
-            return make_response(json.dumps('Not Found.'), 404)
-    elif request.method == 'POST':
-        tvitem = tvitem_query.one()
-        tvitem_name = request.form['name']
-        tvitem_description = request.form['description']
-        genre_name = request.form['current_genre']
+    # users can only edit their own items
+    if tvitem_query.first().user.email == login_session['email']:
+      if request.method == 'GET':
+          # check if genre name and tvitem name from
+          # request URL is valid
+          if tvitem_query.count() > 0 and genre_query.count() > 0:
+              tvitem = tvitem_query.one()
+              return render_template('create_tvitem.html',
+                                     tvitem=tvitem,
+                                     login_session=login_session)
+          else:
+              return make_response(json.dumps('Not Found.'), 404)
+      elif request.method == 'POST':
+          tvitem = tvitem_query.one()
+          tvitem_name = request.form['name']
+          tvitem_description = request.form['description']
+          genre_name = request.form['current_genre']
 
-        genre_id = session.query(Genre).filter_by(name=genre_name).first().id
+          genre_id = session.query(Genre).filter_by(name=genre_name).first().id
 
-        img_url = request.form['img_url']
-        # check if user input is empty
-        if tvitem_name and tvitem_description:
-            tvitem.name = tvitem_name
-            tvitem.description = tvitem_description
-            tvitem.img_url = img_url
-            tvitem.genre_id = genre_id
-            session.commit()
-            url = '/' + genre_name
-            flash('Saved successfully.')
-            return redirect(url)
-        # either name or description is empty
-        # send some error message
-        else:
-            error_msg = 'Both name and description can not be empty.'
-            return render_template('create_tvitem.html',
-                                   current_genre=None,
-                                   tvitem=tvitem,
-                                   error=error_msg,
-                                   login_session=login_session)
+          img_url = request.form['img_url']
+          # check if user input is empty
+          if tvitem_name and tvitem_description:
+              tvitem.name = tvitem_name
+              tvitem.description = tvitem_description
+              tvitem.img_url = img_url
+              tvitem.genre_id = genre_id
+              session.commit()
+              url = '/' + genre_name
+              flash('Saved successfully.')
+              return redirect(url)
+          # either name or description is empty
+          # send some error message
+          else:
+              error_msg = 'Both name and description can not be empty.'
+              return render_template('create_tvitem.html',
+                                     current_genre=None,
+                                     tvitem=tvitem,
+                                     error=error_msg,
+                                     login_session=login_session)
+    else:
+      flash("You can not edit the item created by other people.")
+      return redirect('/')
 
 
 @app.route('/<string:genre_name>/<string:tvitem_name>/delete',
@@ -200,17 +205,20 @@ def delteTvitem(genre_name, tvitem_name):
     genre = session.query(Genre).filter_by(name=genre_name).one()
     tvitem = session.query(TVShow).filter_by(
         genre=genre, name=tvitem_name).one()
-
-    if request.method == 'GET':
-        return render_template('delete_tvitem.html',
-                               tvitem=tvitem,
-                               login_session=login_session)
-    elif request.method == 'POST':
-        session.delete(tvitem)
-        session.commit()
-        flash('Deleted successfully.')
-        url = '/' + genre_name
-        return redirect(url)
+    if tvitem.user.email == login_session['email']:
+      if request.method == 'GET':
+          return render_template('delete_tvitem.html',
+                                 tvitem=tvitem,
+                                 login_session=login_session)
+      elif request.method == 'POST':
+          session.delete(tvitem)
+          session.commit()
+          flash('Deleted successfully.')
+          url = '/' + genre_name
+          return redirect(url)
+    else:
+      flash("You can not delete the item created by other people.")
+      return redirect('/')
 
 
 # User Helper Functions
@@ -244,7 +252,6 @@ def getOneTvitemJSON(genre_name, tvitem_name):
     genre = session.query(Genre).filter_by(name=genre_name).one()
     tvitem = session.query(TVShow).filter_by(
         name=tvitem_name, genre_id=genre.id).one()
-    # print (tvitem.serialize)
     return jsonify(tvitem=tvitem.serialize)
 
 
@@ -260,7 +267,6 @@ def getTvitemsJSON(genre_name):
 def getGenresJSON():
     genres = session.query(Genre).all()
     response = jsonify(Genres=[genre.serialize for genre in genres])
-    # print response
     return response
 
 app.secret_key = 'super secret key'
