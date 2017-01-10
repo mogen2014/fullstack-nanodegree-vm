@@ -2,6 +2,7 @@
 
 {% block create_tvitem%}
 <div  id="create_tvitem">
+
 	<!-- only logged in user can create his own item -->
 	{% if login_session['email'] %}
 		<!-- edit item -->
@@ -21,9 +22,8 @@
 			<input class="btn btn-default btn-xs" type="submit" value="Save">
 			<a class="btn btn-danger btn-xs" href="/{{tvitem.genre.name}}/{{tvitem.name}}">Cancel</a><br>
 		</form>
-
 		<!-- create item -->
-		{% elif current_genre != None %}
+		{% else %}
 		<form method="post">
 			<input id="new_tvitem_name" type="text" name="name" autofocus placeholder="name" value={{tvitem_name}}>
 			<div id="selector" type="{{current_genre.name}}">

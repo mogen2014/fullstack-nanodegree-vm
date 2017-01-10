@@ -12,6 +12,7 @@ from flask import make_response
 import requests
 from login import mod
 from database_setup import engine, session
+from functools import wraps
 
 import os
 Base.metadata.bind = engine
@@ -51,7 +52,22 @@ def showOneGenre(genre_name):
     else:
         return make_response(json.dumps('Not Found.'), 404)
 
+# check if user logged in helper method
 
+
+def login_check(f):
+    @wraps(f)
+    def decorated_func(*args, **kwargs):
+        print '~~~~login_check'
+        if 'email' in login_session:
+            return f(*args, **kwargs)
+        else:
+            flash("Please login.")
+            return redirect('/login')
+    return decorated_func
+
+
+@login_check
 @app.route('/<string:genre_name>/create', methods=['GET', 'POST'])
 def createTvitem(genre_name):
     genre_query = session.query(Genre).filter_by(name=genre_name)
@@ -132,6 +148,7 @@ def showOneTvshow(genre_name, tvitem_name):
         return make_response(json.dumps('Not Found.'), 404)
 
 
+@login_check
 @app.route('/<string:genre_name>/<string:tvitem_name>/edit',
            methods=['GET', 'POST'])
 def editTvitem(genre_name, tvitem_name):

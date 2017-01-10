@@ -16,8 +16,8 @@ Some web related lib is used to make the web page looks nicer and  easily create
 ### Server side
 
 - [Flask](https://flask.pocoo.org) is used to handle almost all web requests and response.
-- [sqlalchemy](https://sqlalchemy-utils.readthedocs.io) is used as ORM to handle database CRUD actions, it's a great tool to talk to your database.
-- [postgresql](https://postgresql.org) is the database to store data on server.
+- [sqlalchemy](https://sqlalchemy-utils.readthedocs.io) is used as ORM to handle database CRUD actions, it's a great tool to talk to your database. What should be noticed is that I set enging to `engine = create_engine('postgresql://catalog:1234@localhost/tv')`, this postgresql's role name and password should be matched to your environment.
+- [postgresql](https://postgresql.org) is the database to store data on server. 
 - [oauth2client](https://oauth2client.readthedocs.io) is the library used as authentication and authorization.
 
 ## How To
